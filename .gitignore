@@ -78,6 +78,10 @@ target/
 # Jupyter Notebook
 .ipynb_checkpoints
 
+# Trained model checkpoints and exported model files
+results/
+saved_summary_model/
+
 # IPython
 profile_default/
 ipython_config.py
