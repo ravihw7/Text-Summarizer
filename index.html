@@ -4,81 +4,300 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Text Summarizer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --lime: #CAD183;
+            --plum: #66023C;
+            --plum-deep: #1A0010;
+            --plum-dark: #2B0119;
+            --glass: rgba(255, 255, 255, 0.06);
+            --glass-strong: rgba(255, 255, 255, 0.10);
+            --glass-border: rgba(202, 209, 131, 0.25);
+            --text: #F4F1E6;
+            --text-muted: rgba(244, 241, 230, 0.65);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: Arial, sans-serif;
+            font-family: "Space Grotesk", system-ui, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #FFF7ED;
-            color: #333;
+            min-height: 100vh;
+            color: var(--text);
+            background:
+                radial-gradient(ellipse at top, var(--plum-dark) 0%, var(--plum-deep) 60%, #0B0007 100%);
+            background-attachment: fixed;
+            overflow-x: hidden;
         }
+
+        /* Animated glow orbs behind the glass */
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(90px);
+            opacity: 0.55;
+            z-index: 0;
+            pointer-events: none;
+            animation: float 18s ease-in-out infinite;
+        }
+
+        .orb-plum {
+            width: 480px;
+            height: 480px;
+            background: var(--plum);
+            top: -120px;
+            left: -120px;
+        }
+
+        .orb-lime {
+            width: 380px;
+            height: 380px;
+            background: var(--lime);
+            bottom: -140px;
+            right: -100px;
+            opacity: 0.30;
+            animation-delay: -9s;
+        }
+
+        .orb-mix {
+            width: 300px;
+            height: 300px;
+            background: linear-gradient(135deg, var(--plum), var(--lime));
+            top: 45%;
+            left: 60%;
+            opacity: 0.20;
+            animation-delay: -4s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(40px, -30px) scale(1.08); }
+            66% { transform: translate(-30px, 25px) scale(0.95); }
+        }
+
+        /* Subtle futuristic grid overlay */
+        .grid {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            background-image:
+                linear-gradient(rgba(202, 209, 131, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(202, 209, 131, 0.05) 1px, transparent 1px);
+            background-size: 48px 48px;
+            mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+            -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+        }
+
         .container {
-            max-width: 600px;
-            margin: 50px auto;
-            padding: 20px;
-            background: #fff;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 1;
+            max-width: 680px;
+            margin: 60px auto;
+            padding: 40px 36px;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            backdrop-filter: blur(22px) saturate(140%);
+            -webkit-backdrop-filter: blur(22px) saturate(140%);
+            box-shadow:
+                0 20px 60px rgba(0, 0, 0, 0.45),
+                inset 0 1px 0 rgba(255, 255, 255, 0.12),
+                0 0 40px rgba(102, 2, 60, 0.35);
+        }
+
+        /* Glowing accent line on top edge of the card */
+        .container::before {
+            content: "";
+            position: absolute;
+            top: -1px;
+            left: 15%;
+            right: 15%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--lime), transparent);
+            box-shadow: 0 0 18px var(--lime);
+        }
+
+        .badge {
+            display: block;
+            width: fit-content;
+            margin: 0 auto 18px;
+            padding: 6px 14px;
+            font-size: 12px;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--lime);
+            border: 1px solid var(--glass-border);
+            border-radius: 999px;
+            background: rgba(202, 209, 131, 0.08);
         }
 
         h1 {
+            font-family: "Orbitron", sans-serif;
             text-align: center;
-            color: #FB923C;
+            font-size: 2.3rem;
+            letter-spacing: 0.06em;
+            margin: 0 0 8px;
+            background: linear-gradient(90deg, var(--lime), #F4F1E6 50%, var(--lime));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 30px rgba(202, 209, 131, 0.25);
         }
 
         h3 {
             text-align: center;
-            margin-top: -20px;
-            margin-bottom: 40px;
+            margin: 0 0 32px;
+            font-weight: 500;
+            color: var(--text-muted);
+            letter-spacing: 0.04em;
+        }
+
+        .intro {
+            color: var(--text-muted);
+            margin: 0 0 14px;
         }
 
         form {
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 16px;
         }
 
         textarea {
-            height: 150px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
+            height: 180px;
+            padding: 16px;
+            font-family: inherit;
             font-size: 16px;
+            line-height: 1.5;
+            color: var(--text);
+            background: rgba(10, 0, 6, 0.35);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 14px;
+            resize: vertical;
+            outline: none;
+            transition: border-color 0.25s, box-shadow 0.25s;
+        }
+
+        textarea::placeholder {
+            color: rgba(244, 241, 230, 0.4);
+        }
+
+        textarea:focus {
+            border-color: var(--lime);
+            box-shadow: 0 0 0 3px rgba(202, 209, 131, 0.18), 0 0 24px rgba(202, 209, 131, 0.15);
         }
 
         button {
-            background-color: #FB923C;
-            color: white;
+            position: relative;
+            font-family: "Orbitron", sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--plum-deep);
+            background: linear-gradient(135deg, var(--lime), #E3E8B4);
             border: none;
-            padding: 10px 15px;
-            font-size: 16px;
+            padding: 14px 18px;
+            border-radius: 14px;
             cursor: pointer;
-            border-radius: 5px;
+            box-shadow: 0 8px 24px rgba(202, 209, 131, 0.25);
+            transition: transform 0.2s, box-shadow 0.2s, filter 0.2s;
         }
 
         button:hover {
-            background-color: #F97316;
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(202, 209, 131, 0.4), 0 0 20px rgba(202, 209, 131, 0.35);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            cursor: wait;
+            filter: saturate(0.5) brightness(0.85);
+            transform: none;
         }
 
         #summary-output {
-            margin-top: 20px;
-            background: #FFEDD5;
-            padding: 15px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
+            margin-top: 28px;
+            padding: 20px 22px;
+            background: linear-gradient(135deg, rgba(102, 2, 60, 0.35), rgba(202, 209, 131, 0.06));
+            border: 1px solid var(--glass-border);
+            border-left: 3px solid var(--lime);
+            border-radius: 14px;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
         }
 
         #summary-heading {
-            margin-top: 0px;
-            margin-bottom: 0px;
+            font-family: "Orbitron", sans-serif;
+            font-size: 0.85rem;
+            text-align: left;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--lime);
+            margin: 0;
+        }
+
+        #summary-text {
+            margin: 10px 0 0;
+            line-height: 1.6;
+            min-height: 1.6em;
+        }
+
+        #summary-text:empty::before {
+            content: "Your summary will appear here.";
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        #summary-text.processing {
+            color: var(--lime);
+            animation: pulse 1.2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                margin: 24px 16px;
+                padding: 28px 20px;
+            }
+
+            h1 {
+                font-size: 1.6rem;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .orb, #summary-text.processing {
+                animation: none;
+            }
         }
     </style>
 </head>
 <body>
+    <div class="orb orb-plum"></div>
+    <div class="orb orb-lime"></div>
+    <div class="orb orb-mix"></div>
+    <div class="grid"></div>
+
     <div class="container">
+        <span class="badge">AI · T5 Model</span>
         <h1>Text Summarizer</h1>
         <h3>using HuggingFace Transformer</h3>
-        <p>Write or Paste your content below for quick summarization.</p>
+        <p class="intro">Write or Paste your content below for quick summarization.</p>
 
         <form id="summarization-form">
             <textarea id="dialogue-input" placeholder="Enter your content here..." required></textarea>
@@ -94,35 +313,37 @@
     <script>
         document.getElementById("summarization-form").addEventListener("submit", async (e) => {
             e.preventDefault();
-        
+
             const dialogueInput = document.getElementById("dialogue-input");
             const summaryText = document.getElementById("summary-text");
             const submitButton = e.target.querySelector("button");
-        
+
             const dialogue = dialogueInput.value.trim();
             if (!dialogue) return;
-        
+
             summaryText.innerText = "Processing...";
+            summaryText.classList.add("processing");
             submitButton.disabled = true;
-        
+
             try {
                 const response = await fetch("/summarize/", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ dialogue }),
                 });
-        
+
                 if (!response.ok) {
                     throw new Error(`Server error: ${response.status}`);
                 }
-        
+
                 const data = await response.json();
                 summaryText.innerText = data.summary || "No summary returned.";
             } catch (err) {
-                
+
                 summaryText.innerText = `Error: ${err.message}`;
             } finally {
-                
+
+                summaryText.classList.remove("processing");
                 submitButton.disabled = false;
             }
         });
