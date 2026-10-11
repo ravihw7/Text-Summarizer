@@ -15,7 +15,7 @@
 <br>
 
 <div align="center">
-  <img src="assets/demo-screenshot.png" alt="Text Summarizer App Screenshot" width="720">
+  <img src="assets/demo-screenshot1.png" alt="Text Summarizer App Screenshot" width="720">
   <p><em>The Text Summarizer web app in action ✨</em></p>
 </div>
 
