@@ -1,6 +1,6 @@
 <div align="center">
 
-# 📝 Text Summarizer
+# 📝 Text Summarizer 
 
 ### *Turning walls of text into bite-sized insights — powered by T5 & 🤗 Transformers*
 
